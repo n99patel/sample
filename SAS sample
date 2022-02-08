@@ -1,0 +1,47 @@
+FILENAME REFFILE '/home/u59793435/dating.csv';
+
+PROC IMPORT DATAFILE=REFFILE
+	DBMS=CSV
+	OUT=WORK.IMPORT;
+	GETNAMES=YES;
+RUN;
+
+PROC CONTENTS DATA=WORK.IMPORT; RUN;
+
+PROC FREQ DATA=WORK.IMPORT ORDER=data;
+TABLES match_outcome / TESTP = (.35,.35,.15,0.15);
+RUN;
+
+proc freq data = work.import order = data;
+tables proximity * match_outcome/ chisq expected deviation cellchi2 nopercent nocol norow;
+run;
+ods graphics on;
+proc freq data = work.import;
+tables proximity * match_outcome/ norow chisq plots=MOSAIC;
+RUN;
+
+proc freq data = work.import order = data;
+tables num_pics * match_outcome/ chisq expected deviation cellchi2 nopercent nocol norow;
+run;
+ods graphics on;
+proc freq data = work.import;
+tables num_pics * match_outcome/ norow chisq plots=MOSAIC;
+RUN;
+
+proc freq data = work.import order = data;
+tables match_outcome * num_chars/ chisq expected deviation cellchi2 nopercent nocol norow;
+run;
+ods graphics on;
+proc freq data = work.import;
+tables match_outcome * num_chars/ norow chisq plots=MOSAIC;
+RUN;
+
+proc sgplot data = work.import;
+vbar match_outcome / group = proximity;
+run; 
+proc sgplot data = work.import;
+vbar match_outcome / group = num_pics;
+run; 
+proc sgplot data = work.import;
+vbar match_outcome / group = num_chars;
+run; 
